@@ -6,18 +6,26 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 import java.util.UUID;
 
+import com.amigoscode.testing.utils.PhoneNumberValidator;
+
 @Service
 public class CustomerRegistrationService {
 
     private final CustomerRepository customerRepository;
+    private final PhoneNumberValidator phoneNumberValidator;
 
     @Autowired
-    public CustomerRegistrationService(CustomerRepository customerRepository) {
+    public CustomerRegistrationService(CustomerRepository customerRepository, PhoneNumberValidator phoneNumberValidator) {
         this.customerRepository = customerRepository;
+        this.phoneNumberValidator = phoneNumberValidator;
     }
 
     public void registerNewCustomer(CustomerRegistrationRequest request) {
         String phoneNumber = request.getCustomer().getPhoneNumber();
+
+        // TODO: Validate that phone number is valid
+        if (!phoneNumberValidator.test(phoneNumber))
+        { throw new IllegalStateException("Phone Number " + phoneNumber + " is not valid"); }
 
         Optional<Customer> customerOptional = customerRepository
                 .selectCustomerByPhoneNumber(phoneNumber);
